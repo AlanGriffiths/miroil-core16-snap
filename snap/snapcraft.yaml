@@ -1,0 +1,137 @@
+name: miroil-dev-env
+summary: A minimal development environment for QtMir/Miroil
+description: A minimal development environment for QtMir/Miroil
+confinement: strict
+grade: devel
+base: core
+version: "0.1"
+
+architectures:
+  - build-on: amd64
+
+plugs:
+  # For Mir server to work
+  opengl:
+  network-bind:
+  x11:
+
+environment:
+  SHELL: bash
+  LC_ALL: C.UTF-8
+  LD_LIBRARY_PATH: ${SNAP}/usr/lib/:${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
+  PATH: $SNAP/bin/:$SNAP/usr/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+  # XDG config
+  XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
+  XDG_CONFIG_DIRS: ${SNAP}/etc/xdg:$XDG_CONFIG_DIRS
+  XDG_CONFIG_HOME: $SNAP_USER_DATA/.config
+  # Prep for Qt wayland
+  QT_PLUGIN_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/qt5/plugins/
+  QT_QPA_PLATFORM_PLUGIN_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/qt5/plugins/platforms/
+  QML2_IMPORT_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/qt5/qml
+  QTCHOOSER_NO_GLOBAL_DIR: 1
+  QT_SELECT: snappy-qt5
+
+layout:
+  /usr/share/git-core:
+    bind: $SNAP/usr/share/git-core
+  /usr/lib/git-core:
+    bind: $SNAP/usr/lib/git-core
+  /usr/share/X11/xkb:
+    bind: $SNAP/usr/share/X11/xkb
+  /usr/share/fonts/truetype/freefont:
+    bind: $SNAP/usr/share/fonts/truetype/freefont
+  /usr/share/glvnd:
+    bind: $SNAP/usr/share/glvnd
+  /etc/glvnd:
+    bind: $SNAP/etc/glvnd
+  /etc/fonts:
+    bind: $SNAP/etc/fonts
+
+apps:
+  miroil-dev-env:
+    command-chain:
+      - gohome
+    command: bin/bash -i
+
+parts:
+  ubports-ppa-setup:
+    plugin: nil
+    override-pull: |
+      sudo apt --assume-yes install software-properties-common
+      sudo apt-add-repository http://repo.ubports.com/
+      sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4BD4B4D6DBB583F1
+      sudo apt update
+      sudo apt --assume-yes dist-upgrade
+      snapcraftctl pull
+    stage-packages: [devscripts, equivs, git]
+
+  more-setup:
+    plugin: nil
+    after: [ubports-ppa-setup]
+    stage-packages: [devscripts, equivs, git, g++]
+
+  qtmir-deps:
+    after: [ubports-ppa-setup]
+    plugin: nil
+    stage-packages:
+      - cmake
+      - cmake-extras
+      - debhelper
+      - google-mock
+      - libcgmanager-dev
+      - libcontent-hub-dev
+      - libfontconfig1-dev
+      - libgles2-mesa-dev
+      - libglib2.0-dev
+      - libgsettings-qt-dev
+      - liblttng-ust-dev
+      - libmtdev-dev
+      - libprocess-cpp-dev
+      - libqt5sensors5-dev
+      - libqtdbusmock1-dev
+      - libqtdbustest1-dev
+      - libubuntu-app-launch2-dev
+      - libudev-dev
+      - libunity-api-dev
+      - liburl-dispatcher1-dev
+      - libxkbcommon-dev
+      - libxrender-dev
+      - pkg-config
+      - python3
+      - qt5-default
+      - qtbase5-dev
+      - qtbase5-private-dev
+      - qtdeclarative5-dev
+      - qtdeclarative5-private-dev
+      - quilt
+      - valgrind
+      - qtwayland5
+      - libqt5core5a
+      - libqt5dbus5
+      - libqt5gui5
+      - libqt5widgets5
+      - libqt5x11extras5
+      - libqtermwidget5-0
+
+  misc:
+    after: [ubports-ppa-setup]
+    plugin: nil
+    stage-packages:
+      - dmz-cursor-theme
+      - libgl1-mesa-dri
+      - libxcb1
+      - libpulse0
+      - libsndfile1
+      - libasyncns0
+      - liblua5.2-0
+      - libslang2
+      - libglu1-mesa
+      - libgpm2
+      - dbus
+      - gdb
+      - strace
+      - bash
+
+  scripts:
+    plugin: dump
+    source: scripts
