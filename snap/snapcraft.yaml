@@ -18,7 +18,7 @@ plugs:
 environment:
   SHELL: bash
   LC_ALL: C.UTF-8
-  LD_LIBRARY_PATH: ${SNAP}/usr/lib/:${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
+#  LD_LIBRARY_PATH: ${SNAP}/usr/lib/:${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}
   PATH: $SNAP/bin/:$SNAP/usr/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   # XDG config
   XDG_CACHE_HOME:  $SNAP_USER_COMMON/.cache
@@ -30,7 +30,14 @@ environment:
   QML2_IMPORT_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/qt5/qml
   QTCHOOSER_NO_GLOBAL_DIR: 1
   QT_SELECT: snappy-qt5
-
+  C_INCLUDE_PATH: $SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include-fixed:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/include
+  CPLUS_INCLUDE_PATH: $SNAP/usr/include/c++/5:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET/c++/5:$SNAP/usr/include/c++/5/backward:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include-fixed:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/include
+  GCC_EXEC_PREFIX: $SNAP/usr/lib/gcc/
+  LIBRARY_PATH: $SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/../../../:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET
+  PC_LTTNG_UST_INCLUDEDIR: $SNAP/usr/include/
+  PC_LTTNG_UST_LIBDIR: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
+  PC_LIBURCU_BP_LIBDIR: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
+  PKG_CONFIG_PATH: $SNAP/usr/lib/x86_64-linux-gnu/pkgconfig/:$SNAP/usr/lib/x86_64-linux-gnu/pkgconfig:$SNAP/usr/share/pkgconfig
 layout:
   /usr/share/git-core:
     bind: $SNAP/usr/share/git-core
@@ -46,6 +53,12 @@ layout:
     bind: $SNAP/etc/glvnd
   /etc/fonts:
     bind: $SNAP/etc/fonts
+  /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libpthread_nonshared.a:
+    bind-file: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libpthread_nonshared.a
+  /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libmvec_nonshared.a:
+    bind-file: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libmvec_nonshared.a
+  /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libc_nonshared.a:
+    bind-file: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libc_nonshared.a
 
 apps:
   miroil-dev-env:
@@ -54,6 +67,80 @@ apps:
     command: bin/bash -i
 
 parts:
+  toolchain:
+    plugin: nil
+    stage-packages:
+      - devscripts
+      - equivs
+      - git
+      - g++
+      - gdb
+      - strace
+      - bash
+      - cmake
+      - cmake-extras
+      - debhelper
+      - pkg-config
+    override-build: |
+      snapcraftctl build
+      # create symlink that normally comes from update-alternatives
+      cd $SNAPCRAFT_PART_INSTALL/usr/bin
+      ln -sf gcc cc
+
+  mir-deps:
+    plugin: nil
+    stage-packages:
+      - capnproto
+      - dbus
+      - dh-python
+      - eglexternalplatform-dev
+      - google-mock
+      - graphviz
+      - libboost-date-time-dev
+      - libboost-dev
+      - libboost-filesystem-dev
+      - libboost-iostreams-dev
+      - libboost-program-options-dev
+      - libboost-system-dev
+      - libboost-thread-dev
+      - libcapnp-dev
+      - libdrm-dev
+      - libegl1-mesa-dev
+      - libepoxy-dev
+      - libevdev-dev
+      - libfreetype6-dev
+      - libgbm-dev
+      - libgl1-mesa-dev
+      - libgles2-mesa-dev
+      - libglib2.0-dev
+      - libglm-dev
+      - libgoogle-glog-dev
+      - libgtest-dev
+      - libinput-dev
+      - liblttng-ust-dev
+#      - libnvidia-egl-wayland-dev
+      - libprotobuf-dev
+      - libudev-dev
+      - libumockdev-dev
+      - libwayland-dev
+      - libxcb-composite0-dev
+      - libxcb-render0-dev
+      - libxcb-xfixes0-dev
+      - libxcursor-dev
+      - libxkbcommon-dev
+      - libxml++2.6-dev
+      - libyaml-cpp-dev
+      - linux-libc-dev
+      - nettle-dev
+      - protobuf-compiler
+      - python3
+      - python3-dbusmock
+      - python3-pil
+      - systemtap-sdt-dev
+      - umockdev
+      - uuid-dev
+#      - wlcs
+
   ubports-ppa-setup:
     plugin: nil
     override-pull: |
@@ -63,20 +150,11 @@ parts:
       sudo apt update
       sudo apt --assume-yes dist-upgrade
       snapcraftctl pull
-    stage-packages: [devscripts, equivs, git]
-
-  more-setup:
-    plugin: nil
-    after: [ubports-ppa-setup]
-    stage-packages: [devscripts, equivs, git, g++]
 
   qtmir-deps:
     after: [ubports-ppa-setup]
     plugin: nil
     stage-packages:
-      - cmake
-      - cmake-extras
-      - debhelper
       - google-mock
       - libcgmanager-dev
       - libcontent-hub-dev
@@ -114,7 +192,6 @@ parts:
       - libqtermwidget5-0
 
   misc:
-    after: [ubports-ppa-setup]
     plugin: nil
     stage-packages:
       - dmz-cursor-theme
@@ -128,9 +205,6 @@ parts:
       - libglu1-mesa
       - libgpm2
       - dbus
-      - gdb
-      - strace
-      - bash
 
   scripts:
     plugin: dump
