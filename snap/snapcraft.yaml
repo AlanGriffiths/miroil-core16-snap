@@ -38,6 +38,7 @@ environment:
   PC_LTTNG_UST_LIBDIR: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
   PC_LIBURCU_BP_LIBDIR: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
   PKG_CONFIG_PATH: $SNAP/usr/lib/x86_64-linux-gnu/pkgconfig/:$SNAP/usr/lib/x86_64-linux-gnu/pkgconfig:$SNAP/usr/share/pkgconfig
+
 layout:
   /usr/share/git-core:
     bind: $SNAP/usr/share/git-core
@@ -59,6 +60,9 @@ layout:
     bind-file: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libmvec_nonshared.a
   /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libc_nonshared.a:
     bind-file: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/libc_nonshared.a
+  # Mir's cmake has a hard-coded path to this file
+  /usr/include/EGL/eglplatform.h:
+    bind-file: $SNAP/usr/include/EGL/eglplatform.h
 
 apps:
   miroil-dev-env:
