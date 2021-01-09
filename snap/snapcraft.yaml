@@ -140,6 +140,10 @@ parts:
       - umockdev
       - uuid-dev
 #      - wlcs
+    override-prime: |
+      snapcraftctl prime
+      # fixup the .pc files
+      sed -i 's!/root/stage!$SNAP!' $SNAPCRAFT_PRIME/usr/share/pkgconfig/*.pc $SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu/pkgconfig/*.pc
 
   ubports-ppa-setup:
     plugin: nil
@@ -190,6 +194,10 @@ parts:
       - libqt5widgets5
       - libqt5x11extras5
       - libqtermwidget5-0
+    override-prime: |
+      snapcraftctl prime
+      # fixup the .pc files
+      sed -i 's!/root/stage!$SNAP!' $SNAPCRAFT_PRIME/usr/share/pkgconfig/*.pc $SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu/pkgconfig/*.pc
 
   misc:
     plugin: nil
