@@ -33,10 +33,7 @@ environment:
   C_INCLUDE_PATH: $SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include-fixed:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/include
   CPLUS_INCLUDE_PATH: $SNAP/usr/include/c++/5:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET/c++/5:$SNAP/usr/include/c++/5/backward:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include-fixed:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/include
   GCC_EXEC_PREFIX: $SNAP/usr/lib/gcc/
-  LIBRARY_PATH: $SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/../../../:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET
-  PC_LTTNG_UST_INCLUDEDIR: $SNAP/usr/include/
-  PC_LTTNG_UST_LIBDIR: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
-  PC_LIBURCU_BP_LIBDIR: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
+  LIBRARY_PATH: /lib:/usr/lib:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
   PKG_CONFIG_PATH: $SNAP/usr/lib/x86_64-linux-gnu/pkgconfig/:$SNAP/usr/lib/x86_64-linux-gnu/pkgconfig:$SNAP/usr/share/pkgconfig
 
 layout:
@@ -63,6 +60,8 @@ layout:
   # Mir's cmake has a hard-coded path to this file
   /usr/include/EGL/eglplatform.h:
     bind-file: $SNAP/usr/include/EGL/eglplatform.h
+  /usr/local:
+    bind: $SNAP
 
 apps:
   miroil-dev-env:
