@@ -30,10 +30,10 @@ environment:
   QML2_IMPORT_PATH: ${SNAP}/usr/lib/${SNAPCRAFT_ARCH_TRIPLET}/qt5/qml
   QTCHOOSER_NO_GLOBAL_DIR: 1
   QT_SELECT: snappy-qt5
-  C_INCLUDE_PATH: $SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include-fixed:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/include
-  CPLUS_INCLUDE_PATH: $SNAP/usr/include/c++/5:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET/c++/5:$SNAP/usr/include/c++/5/backward:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include:$SNAP/usr/lib/gcc/$SNAPCRAFT_ARCH_TRIPLET/5/include-fixed:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/usr/include
+  C_INCLUDE_PATH:     $SNAP/usr/include:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET
+  CPLUS_INCLUDE_PATH: $SNAP/usr/include:$SNAP/usr/include/$SNAPCRAFT_ARCH_TRIPLET
   GCC_EXEC_PREFIX: $SNAP/usr/lib/gcc/
-  LIBRARY_PATH: /lib:/usr/lib:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
+  LIBRARY_PATH: /lib:/usr/lib:/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/
   PKG_CONFIG_PATH: $SNAP/usr/lib/x86_64-linux-gnu/pkgconfig/:$SNAP/usr/lib/x86_64-linux-gnu/pkgconfig:$SNAP/usr/share/pkgconfig
 
 layout:
@@ -91,12 +91,13 @@ parts:
       ln -sf gcc cc
 
   mir-deps:
+    after: [ubports-ppa-setup]
     plugin: nil
     stage-packages:
       - capnproto
       - dbus
       - dh-python
-      - eglexternalplatform-dev
+#      - eglexternalplatform-dev
       - google-mock
       - graphviz
       - libboost-date-time-dev
