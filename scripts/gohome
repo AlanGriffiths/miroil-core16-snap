@@ -1,3 +1,16 @@
 #!/bin/sh
 cd
+if [ ! -d mir ]
+then
+  git clone https://github.com/Miroil-for-Lomiri/mir
+fi
+
+if [ ! -d mir/build ]
+then
+  mkdir mir/build
+  cd mir/build
+  cmake -DMIR_ENABLE_WLCS_TESTS=off ..
+  cd -
+fi
+
 exec "$@"
